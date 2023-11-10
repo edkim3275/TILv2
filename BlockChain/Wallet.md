@@ -1,5 +1,25 @@
 # WALLET 🔐
 
+## Dev History
+
+### Web3.js vs. Ethers.js
+
+> Wallet FE 개발을 하게되면 자연스럽게 접해봤을 두 라이브러리로 web3.js와 ethers.js가 있음. 다만 두 가지 라이브러리의 특징이나 차이에 대해 알고 사용하자.
+
+- 두 가지 모두 decentralized applications 빌딩을 위한 라이브러리
+- 스마트 컨트랙트와 상호작용하고 EVM 호환 블록체인에서 트랜잭션을 처리하는 다양한 방법을 제공하는 노드 패키지
+- web3.js는 이더리움 네트워크 기반이고, 스마트 컨트랙트 개발을 위한 라이브러리라고 한다면 ethers.js 디지털 자산과 스마트 컨트랙트 생성을 위한 라이브러리라고 볼 수 있음
+- web3.js
+  - Ethereum Foundation에서 개발하고 유지보수하는 공식 JavaScript API 라이브러리
+  - 주로 이더리움 블록체인과 상호 작용하는 DApp 개발에 사용
+- ethers.js
+  - Richard Moore(https://github.com/ricmoo)가 개발
+  - 이더리움 블록체인 및 해당 생태계와 상호 작용하기 위한 라이브러리
+  - API를 두 가지 역할로 나누어 개발자에게 유연성을 제공
+    - 이더리움 네트워크에 대한 익명 연결기능을 제공하는 공급자(provider)
+    - 개인키에 엑세스하고 거래에 서명하는 기능을 제공하는 서명자(signer)
+- 결국 프로젝트의 요구사항, 개발자 경험, 커뮤니티 지원 등 요인에 의해 결정하면 됨
+
 ## Self Q&A
 
 ### 통합지갑 개발에 대한 고찰
