@@ -32,7 +32,7 @@
 
 - 콘웨이 법칙에 입각해 소프트웨어 구조를 조직 커뮤니케이션 구조와 유사하게 만들 수 있도록 도와주는 원칙이 SRP(Single Responsibility Principle)
 
-  <img src="/Users/edgar/Documents/TILv2/Frontend/SOLID.assets/image-20231111203842847.png" alt="image-20231111203842847" style="zoom:67%;" />
+  <img src="https://github.com/edkim3275/TILv2/assets/77393619/5d2aff18-24f8-4b14-b5b2-bcae2d130e30" alt="image-20231111203842847" style="zoom:67%;" />
 
 ## SRP : Single Responsibility Principle
 
