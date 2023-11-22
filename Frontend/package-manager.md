@@ -50,17 +50,18 @@
 
   3. 명령어([캡틴판교 블로그](https://joshua1988.github.io/vue-camp/package-manager/npm-vs-yarn.html#npm%E1%84%80%E1%85%AA-yarn%E1%84%8B%E1%85%B4-%E1%84%8E%E1%85%A1%E1%84%8B%E1%85%B5%E1%84%8C%E1%85%A5%E1%86%B7))
 
-     | 명령어             | npm                                       | yarn                                |
-     | ------------------ | ----------------------------------------- | ----------------------------------- |
-     | 의존성 설치        | `npm install`                             | `yarn`                              |
-     | 패키지 설치        | `npm install <package_name>`              | `yarn add <package_name>`           |
-     | dev 패키지 설치    | `npm install --save-dev <package_name>`   | `yarn add --dev <package_name>`     |
-     | 글로벌 패키지 설치 | `npm install --global <package_name>`     | `yarn global add <package_name>`    |
-     | 패키지 제거        | `npm uninsatll <package_name>`            | `yarn remove <package_name>`        |
-     | dev 패키지 제거    | `npm uninstall --save-dev <package_name>` | `yarn remove <package_name>`        |
-     | 글로벌 패키지 제거 | `npm uninstall --global <package_name>`   | `yarn global remove <package_name>` |
-     | 업데이트           | `npm update`                              | `yarn upgrade`                      |
-     | 패키지 업데이트    | `npm update <package_name>`               | `yarn upgrade <package_name>`       |
+     | 명령어                | npm                                       | yarn                                |
+     | --------------------- | ----------------------------------------- | ----------------------------------- |
+     | 의존성 설치           | `npm install`                             | `yarn`                              |
+     | 패키지 설치           | `npm install <package_name>`              | `yarn add <package_name>`           |
+     | 특정 버전 패키지 설치 | `npm install <package_name>@version`      | `yarn add <package_name>@version    |
+     | dev 패키지 설치       | `npm install --save-dev <package_name>`   | `yarn add --dev <package_name>`     |
+     | 글로벌 패키지 설치    | `npm install --global <package_name>`     | `yarn global add <package_name>`    |
+     | 패키지 제거           | `npm uninsatll <package_name>`            | `yarn remove <package_name>`        |
+     | dev 패키지 제거       | `npm uninstall --save-dev <package_name>` | `yarn remove <package_name>`        |
+     | 글로벌 패키지 제거    | `npm uninstall --global <package_name>`   | `yarn global remove <package_name>` |
+     | 업데이트              | `npm update`                              | `yarn upgrade`                      |
+     | 패키지 업데이트       | `npm update <package_name>`               | `yarn upgrade <package_name>`       |
 
 - 두 패키지 관리자에 대한 차이 결론
 
