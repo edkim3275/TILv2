@@ -54,7 +54,7 @@
      | --------------------- | ----------------------------------------- | ----------------------------------- |
      | 의존성 설치           | `npm install`                             | `yarn`                              |
      | 패키지 설치           | `npm install <package_name>`              | `yarn add <package_name>`           |
-     | 특정 버전 패키지 설치 | `npm install <package_name>@version`      | `yarn add <package_name>@version    |
+     | 특정 버전 패키지 설치 | `npm install <package_name>@version`      | `yarn add <package_name>@version`   |
      | dev 패키지 설치       | `npm install --save-dev <package_name>`   | `yarn add --dev <package_name>`     |
      | 글로벌 패키지 설치    | `npm install --global <package_name>`     | `yarn global add <package_name>`    |
      | 패키지 제거           | `npm uninsatll <package_name>`            | `yarn remove <package_name>`        |
@@ -118,3 +118,11 @@
   5. 환경 변수 및 구성의 관리
 
      패키지 관리자의 선택은 환경 변수 및 구성 파일 관리에도 영향을 미칠 수 있음.(예 : 환경 변수를 설정하는 방식이나 구성 파일의 위치 등이 서로 다를 수 있음.)
+
+- npm 옵션
+
+  - `--save-dev`
+
+    패키지를 devDependencies로 설치하는 옵션. 주로 개발 시에만 필요한 도구나 라이브러리로, 프로덕션 빌드에는 필요하지 않는 패키지를 설치할 때 사용하는 옵션
+
+    `npm install --save-dev <package_name>`으로 사용
