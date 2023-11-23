@@ -93,3 +93,11 @@
     말그대로 're' + 'base' base를 재설정한다는 의미. 여기서 base는 브랜치의 base를 의미하는데, 브랜치는 base 지점을 갖고 있어서 base에서부터 코드를 수정하게 됨.
 
     git history가 선형으로 깔끔해지면서 협업 시 merge만 했을 경우보다 history 확인이 상대적으로 명확해진다는 장점
+
+- `git config credential.helper store`
+
+  git push/pull 시에 유저정보 기입하는 중복 작업 생략
+
+- `git pull origin develop` => `git pull --set-upstream develop`
+
+  => `git pull` === `git pull origin develop`
