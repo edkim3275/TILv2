@@ -19,10 +19,9 @@ JSON Web Token의 약자로, 정보를 안전하게 전송하기 위한 일종�
 ### JWT 구조
 
 기본적으로 육안으로 해석하기 어려운 문자열로 만들어져 있고, https://jwt.io/ 에서 해독(decode)하면 JSON형태로 들어있는 정보를 확인할 수 있다.
+<img width="708" alt="image-20231203162838328" src="https://github.com/edkim3275/TILv2/assets/77393619/e59f8a48-f120-49b8-87b1-bcd27bcb389b">
 
-![image-20231203162838328](/Users/edgar/Documents/TILv2/Frontend/JWT.assets/image-20231203162838328.png)
-
-<img src="/Users/edgar/Documents/TILv2/Frontend/JWT.assets/image-20231203163034970.png" alt="image-20231203163034970" style="zoom: 33%;" />
+<img width="710" alt="image-20231203163034970" src="https://github.com/edkim3275/TILv2/assets/77393619/a504d506-5869-40e0-b280-1a0bb276a352">
 
 ```
 header.payload.signature
@@ -77,7 +76,7 @@ xxxxxxxxxx.yyyyyyyyyy.zzzzzzzzzz
 
 ### 클라-서버 통신과정
 
-![image-20231203163237495](/Users/edgar/Documents/TILv2/Frontend/JWT.assets/image-20231203163237495.png)
+<img width="537" alt="image-20231203163237495" src="https://github.com/edkim3275/TILv2/assets/77393619/945022ed-eb67-404e-b8d5-e9e710935c35">
 
 1. 로그인(클라이언트에서 서버로 요청)
 
@@ -157,7 +156,7 @@ xxxxxxxxxx.yyyyyyyyyy.zzzzzzzzzz
 
 ### 세션 유지 절차(session flow)
 
-![image-20231203161501430](/Users/edgar/Documents/TILv2/Frontend/JWT.assets/image-20231203161501430.png)
+<img width="530" alt="image-20231203161501430" src="https://github.com/edkim3275/TILv2/assets/77393619/02cceb2a-9e9d-471d-91e8-28d407e2a63d">
 
 1. 로그인
 
