@@ -14,10 +14,12 @@
 | `git switch <branch_name>`                             | 해당 브랜치에 체크아웃          |                   |
 | `git checkout -b <branch_name>`                        | 브랜치 생성함과 동시에 체크아웃 |                   |
 | `git switch -c <branch_name>`                          | 브랜치 생성함과 동시에 체크아웃 |                   |
+| `git checkout -t remote origin path`                   | 원격 브랜치 가져오기            |                   |
 | `git branch -d <branch_name>`                          | 로컬 브랜치 삭제                | `--delete`의 약자 |
 | `git push <remote_branch_name> -d <local_branch_name>` | 원격 브랜치 삭제                |                   |
 | `git branch --set-upstream-to origin/<branch_name>`    | 로컬, 원격 브랜치 연동          |                   |
 | `git merge <branch_name>`                              | 브랜치 병합                     |                   |
+|                                                        |                                 |                   |
 
 - `git pull ` 하려는 브랜치가 현재 브랜치 커밋과 다른 경우에는 3가지 방식이 존재.
 
