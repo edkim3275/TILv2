@@ -33,7 +33,7 @@
   > clear white-space
   > ```
 
-  작은 변화에도 처음부터 동일한 작업을 반복하고, 규모가 커질수록 렌더링 부담이 커져서 VirtualDOM 방식이 나오게 됨
+  작은 변화에도 처음부터 동일한 작업(DOM트리 생성부터 페인팅 작업까지)을 반복하고, 규모가 커질수록 렌더링 부담이 커져서 VirtualDOM 방식이 나오게 됨
 
 ### VirtualDOM
 
@@ -144,7 +144,46 @@
   }
   ```
 
-  
+### 강제동기레이아웃 & 레이아웃 스레싱
 
-  
+직접 DOM에 접근하여 속성을 변경하는 것이 고비용이 드는 작업. 하지만 DOM을 변경하지 않아도 이러한 고비용 작업이 발생될 때가 있는데 이러한 상황을 강제동기레이아웃이라고 함.
+
+예를들면 DOM 요소 속성을 읽기만해도 처음부터 렌더링작업을 하게 된다.
+
+강제동기레이아웃이 고반복되어 렌더링이 매우 빈번하게 발생하는 경우를 레아이웃 스레싱이라고 한다.
+
+이를 방지하기 위해서는 DOM에 접근하는 값을 캐싱하여 사용하면 된다.
+
+```javascript
+// bad
+document.getElementById('el').style.top = "10px";
+document.getElementById('el').width = "10px";
+document.getElementById('el').style.color = "red";
+
+// better
+const elem = document.getElementById('el').style;
+elem.top = "10px";
+elem.left = "10px";
+elem.color = "red";
+ 
+// better
+var csstext = "; top: 10px; left: 10px; color: #dad;";
+document.getElementById('my').style.cssText += csstext
+```
+
+- 참고자료
+
+  [DOM과 Virtual DOM, DOM 접근을 지양해야하는 이유](https://velog.io/@skawnkk/Dom%EA%B3%BC-VirtualDOM-Dom%EC%A0%91%EA%B7%BC%EC%9D%84-%EC%A7%80%EC%96%91%ED%95%B4%EC%95%BC%ED%95%98%EB%8A%94-%EC%9D%B4%EC%9C%A0)
+
+  [Virtual DOM](https://elmprogramming.com/virtual-dom.html)
+
+  [Virtual DOM을 직접 만들어보자](https://makestory.medium.com/virtual-dom-%EB%B2%84%EC%B6%94%EC%96%BC-%EB%8F%94-%EA%B0%80%EC%83%81-%EB%8F%94-%EC%9D%84-%EC%A7%81%EC%A0%91-%EB%A7%8C%EB%93%A4%EC%96%B4%EB%B3%B4%EC%9E%90-1c44606ea9b1)
+
+  [How to write your own Virtual DOM](https://medium.com/@deathmood/how-to-write-your-own-virtual-dom-ee74acc13060)
+
+  [Things that cause invalidation](https://devhints.io/layout-thrashing)
+
+  [DOM access optimization](https://www.phpied.com/dom-access-optimization/)
+
+
 
