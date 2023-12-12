@@ -19,7 +19,13 @@
 | `git push <remote_branch_name> -d <local_branch_name>` | 원격 브랜치 삭제                |                   |
 | `git branch --set-upstream-to origin/<branch_name>`    | 로컬, 원격 브랜치 연동          |                   |
 | `git merge <branch_name>`                              | 브랜치 병합                     |                   |
-|                                                        |                                 |                   |
+
+### 리모트 관련
+
+| 명령어                                    | 기능                                         | 비고 |
+| ----------------------------------------- | -------------------------------------------- | ---- |
+| `git remote -v`                           | 현재 연결되어있는 remote 저장소 url주소 확인 |      |
+| `git remote set-url origin "url_address"` | 연결된 remote 저장소 url 주소 변경           |      |
 
 - `git pull ` 하려는 브랜치가 현재 브랜치 커밋과 다른 경우에는 3가지 방식이 존재.
 
@@ -103,3 +109,9 @@
 - `git pull origin develop` => `git pull --set-upstream develop`
 
   => `git pull` === `git pull origin develop`
+
+## 브랜치 전략
+
+### git flow
+
+### thunk based
