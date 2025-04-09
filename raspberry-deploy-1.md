@@ -20,4 +20,4 @@
 
   https://www.raspberrypi.com/software/ 접속 > Download for Mac OS
 
-  ![image-20250409153738371](./라즈베리파이에 웹 프로젝트 배포하기(1).assets/image-20250409153738371.png)
+  ![image-20250409153738371](./raspberry-deploy-1.assets/image-20250409153738371.png)
