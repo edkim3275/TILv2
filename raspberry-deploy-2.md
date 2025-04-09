@@ -171,6 +171,16 @@
 
   다 한 파일에 정리할 수 있다.
 
+- 로그인 없이 도커 명령어 사용이 가능한 이유
+
+  Docker Hub에 로그인하지 않았어도 public 이미지만 사용할 경우에는 로그인 없이도 실행 가능하다.
+
+  그 이유는
+
+  - Docker는 설치하면 **로컬에 Docker 엔진(데몬)**이 함께 설치됨
+  - docker-compose는 그 엔진에 명령을 보내서 컨테이너를 실행하는 것
+  - 로그인은 **Docker Hub(=이미지 저장소)**에서 **private 이미지**를 가져올 때만 필요함
+
 - Docker - postgreSQL DB - prisma
 
   - `docker run ...` 혹은 `docker-compose up -d` 
@@ -178,24 +188,98 @@
     Docker에 비어있는 PostgreSQL 컨테이너 실행. 즉, DB 서버는 켜졌지만 안에 테이블이나 데이터는 아직 없는 상태
 
 
-  - 스키마 정의
+    - 스키마 정의
 
-    prisma/schema.prisma 수정
-
-
-  - `npx prisma migrate dev`
-
-    마이그레이션으로 DB 스키마 적용
-
-    :bulb: 마이그레이션 : Prisma 스키마에서 정의한 DB 구조를 실제 데이터베이스에 반영하기 위한 변화 기록을 만드는 것을 의미한다. 즉, DB에 어떤 변화(테이블 추가, 컬럼 수정 등)를 할지 Prisma가 기억하고 실행할 수 있도록 이력을 만드는 작업
+      prisma/schema.prisma 수정
 
 
-  - `npx prisma db seed` 
+    - `npx prisma migrate dev`
 
-    `prisma/migrations`에 정의된 내용을 DB에 반영하고, 자동으로 `prisma db seed`도 실행해준다.
+      마이그레이션으로 DB 스키마 적용
+
+      :bulb: 마이그레이션 : Prisma 스키마에서 정의한 DB 구조를 실제 데이터베이스에 반영하기 위한 변화 기록을 만드는 것을 의미한다. 즉, DB에 어떤 변화(테이블 추가, 컬럼 수정 등)를 할지 Prisma가 기억하고 실행할 수 있도록 이력을 만드는 작업
 
 
-  - `npx prisma migrate reset` 
-    - 기존 DB를 완전히 리셋
-      - 마이그레이션 다시 적용
-      - seed도 자동 실행
+    - `npx prisma db seed` 
+
+      `prisma/migrations`에 정의된 내용을 DB에 반영하고, 자동으로 `prisma db seed`도 실행해준다.
+
+
+    - `npx prisma migrate reset` 
+      - 기존 DB를 완전히 리셋
+        - 마이그레이션 다시 적용
+        - seed도 자동 실행
+
+## Trouble Shooting :dart:
+
+### Git Clone Error
+
+- 라즈베리파이에 프로젝트를 gitHub에서 클론할 때 아래와 같은 에러 발생
+
+  ![image-20250409164502553](./raspberry-deploy-2.assets/image-20250409164502553.png)
+
+- 원인은 2021년부터 HTTP 방식에서 "아이디 + 비밀번호 로그인"을 막음
+
+  따라서 Personal Access Token(PAT) 방식이나 SSH 방식 중 하나를 써야 함.
+
+- GitHub에서 Personal Access Token(PAT)을 만든 후 해당 토큰 정보는 안전하게 보관
+
+  https://github.com/settings/personal-access-tokens
+
+- 라즈베리파이에 Git credential helper 설정
+
+  라즈베리파이에 자격증명 캐시 기능 설정(메모리 기반 캐시)
+
+  ```bash
+  git config --global credential.helper cache
+  git config --global credential.helper 'cache --timeout=3600'   # 1시간 저장
+  ```
+
+  | **방식**                      | **설명**                 | **보안** | **추천도**  |
+  | ----------------------------- | ------------------------ | -------- | ----------- |
+  | credential.helper store       | 자격증명을 평문으로 저장 | 🔸 낮음   | 간편하긴 함 |
+  | credential.helper cache       | 메모리에 일정 시간 저장  | 🔹 중간   | 🔥 추천      |
+  | credential.helper osxkeychain | macOS 전용               | 🔐 높음   | 맥북 전용   |
+
+  평문 텍스트로 저장하는 방식(단순하지만 위험할 수 있어서 위의 캐시방식 권장)
+
+  ```bash
+  git config --global credential.helper store
+  ```
+
+- 한 번만 사용자 명 + PAT 입력
+
+- 이후 자동으로 저장된 자격증명 사용됨
+
+### Docker compose up
+
+- `.env`, `Dockerfile`, `docker-compose.yml`생성 후 백그라운드 실행을 위해 `docker-compose up -d`를 했지만 아래와 같은 에러 발생
+
+- PermissionError: [Errno 13] Permission denied
+  docker.errors.DockerException: Error while fetching server API version
+
+- 원인은 현재 사용자(edgar)가 docker 명령어를 실행할 권한이 없어서 생긴 에러. 즉, Docker 데몬에 접근 권한이 없는 상태.
+
+- 방법1. sudo 붙이기(간단)
+
+  ```bash
+  sudo docker-compose up -d
+  ```
+
+  이러면 root 권한으로 Docker에 접근해서 문제 없이 실행됨.
+
+- 방법2. docker 그룹에 현재 사용자 추가하기(근본적인 해결방법)
+
+  ```bash
+  sudo usermod -aG docker $USER
+  ```
+
+  위 명령은현재 사용자(edgar)를 docker 그룹에 추가해서 매번 sudo 없이도 Docker를 쓸 수 있게 해줘.
+
+  **추가 후에는 꼭 로그아웃 후 다시 로그인하거나 셸 재시작이 필요함**
+
+  ```bash
+  newgrp docker # 또는 그냥 재로그인
+  ```
+
+### 
