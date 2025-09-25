@@ -40,6 +40,8 @@
 
 ### OCI
 
+> :bulb: 클라우드 서비스는 회사마다 방법이 조금씩 상이하고 업데이트가 이루어지면 새로운 이용 방법으로 개편되는 경우가 잦기에 개략적인 서비스 사용 방법만 이해하고 그때그때 찾아보며 익히면 된다.
+
 - GuestOS(Instance) > compartment(작업공간) > Create Instance
 
 - [Image] 서버 이미지를 의미
@@ -125,9 +127,9 @@
 
   :bulb: 웹 서버(nginx) 설치가 완료되어 서버에 접속해보면 아직 접속이 안된다. 아직 서버 방화벽이 열려있지 않은 상황이라 접근이 안되는 것!
 
-   `ufw allow 8080/tcp` : 다른 클라우드에서의 오픈 명령어
+   `ufw allow 8080/tcp` : 다른 클라우드에서의 오픈 명령어(우분투 표준)
 
-  `sudo iptables -I INPUT 1 -p tcp --dport 80 -j ACCEPT` : 오라클 클라우드에서의 서버 오픈 명령어.
+  `sudo iptables -I INPUT 1 -p tcp --dport 80 -j ACCEPT` : 오라클 클라우드(OCI)에서의 서버 오픈 명령어.
 
   :bulb:OCI 클라우드 방화벽은 OCI 자체 내에서 방화벽을 오픈해줄 수 있음(80,5000,3389,5432 등 필요한 tcp port 오픈) 현재는 같은 서브넷, 방화벽을 사용중(방화벽은 열려있으니 서브넷만 오픈해주면 됨)
 
@@ -194,8 +196,6 @@
   `\c testdb` : testdb로 접속 connect testdb 라는 의미
 
   `\dt` : 현재 DB에서 테이블 확인
-
-  
 
 - 두 번째 서버(일반사용자로 작업할 용도)
 
@@ -316,7 +316,7 @@
 
 - `who` : 현재 접속해 있는 계정 확인
 
-- `scp` : 서버간 파일복사
+- :star:`scp` : 서버간 파일복사
 
   `scp -P 10022 textfile.txt test000@129.154.209.167:/tmp` S
   SSH 접속 포트를 10022 포트로 지정해서 textfile.txt 파일을 서버의 경로로 복사
@@ -327,7 +327,7 @@
 
   `scp 원격서버user_id@원격서버IP:ssh-key경로 .`  : sshkey경로를 해당 원격서버의 `.`경로로 복사
 
-  :bulb: Ubuntu에서 명령어 순서는 from - to
+  :bulb: Ubuntu에서 명령어 순서는 from > to
 
   서버접속에 키가 따로 필요하지 않은 경우는 `scp 보낼파일 계정@보낼서버:/폴더` 와 같은 식으로 복사한다.
 
