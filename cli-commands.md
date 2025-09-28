@@ -2,13 +2,14 @@
 
 ## Docker
 
-| **명령어**                    | **설명**                    |
-| ----------------------------- | --------------------------- |
-| docker-compose up -d          | 백그라운드 실행             |
-| docker-compose down           | 컨테이너 종료 및 정리       |
-| docker-compose logs -f        | 로그 실시간 보기            |
-| docker ps                     | 실행 중인 컨테이너 확인     |
-| docker-compose exec blog bash | 블로그 컨테이너 안으로 진입 |
+| **명령어**                    | **설명**                             |
+| ----------------------------- | ------------------------------------ |
+| docker-compose up -d          | 백그라운드 실행                      |
+| docker-compose up -d --build  | 새로 빌드해서 실행(최신코드 반영 시) |
+| docker-compose down           | 컨테이너 종료 및 정리                |
+| docker-compose logs -f        | 로그 실시간 보기                     |
+| docker ps                     | 실행 중인 컨테이너 확인              |
+| docker-compose exec blog bash | 블로그 컨테이너 안으로 진입          |
 
 ## Prisma
 
@@ -24,11 +25,10 @@
 
 ## Mac OS
 
-| 명령어                     | 설명              |
-| -------------------------- | ----------------- | ------------------------- |
-| `netstat -nr               | grep default`     | 맥북 게이트웨이 주소 확인 |
-| `curl https://ifconfig.me` | 외부 IP 주소 확인 |
-
+| 명령어                       | 설명                      |
+| ---------------------------- | ------------------------- |
+| `netstat -nr | grep default` | 맥북 게이트웨이 주소 확인 |
+| `curl https://ifconfig.me`   | 외부 IP 주소 확인         |
 - `netstat -nr | grep default`는 우리가 인터넷에 나갈 때 거치는 첫 번째 기기 = 게이트웨이(보통 공유기)의 IP를 보여준다.
 
 ## Ubuntu
