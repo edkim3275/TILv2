@@ -101,15 +101,80 @@
 >
 > SQL은 목적에 따라 몇 가지 하위언어로 나뉘게 된다.
 
+- postgres=# \du : 생성한 사용자 목록 확인
+
+  postgres=# psql -U test01 -d testdb	=>	psql -U 사용자명 -d 데이터베이스명. 
+
+  - `psql`  : postgreSQL 실행
+  - `-U <user>` : 어떤 DB 사용자 계정으로 접속할지 지정
+  - `-d <dbname>` : 어떤 데이터베이스에 접속할지 지정
+
+- postgres=# \l	=>	데이터베이스 목록 확인
+
+  SELECT current_database(), current_schema();	=>	현재 접속한 데이터베이스, 스키마 확인
+
+  postgres=# \d student	=>	테이블 구조(스키마) 보기
+
+  postgres-# \t	=>	Tuples only 모드 전환(결과에서 헤더와 구분선 제거)
+
+  postgres-# \dt	=>	Describe Tables. 현재 DB 안의 테이블만 목록으로 보여줌
+
 ### DDL(Data Definition Language)
 
 - 데이터 정의 언어. 스키마나 객쳬(테이블, 뷰, 인덱스, 사용자 등)의 구조 정의/수정/삭제
+
 - CREATE(생성), ALTER(구조 변경), DROP(삭제)
+
+- 관례 : 테이블명 / 컬럼명 => 소문자 + snake_case
+
+  ```sql
+  CREATE TABLE student(idx SERIAL, name VARCHAR(50), age INT, dept VARCHAR(50), grade CHAR(1), reg_date TIMESTAMPTZ DEFAULT now() );
+  
+  ALTER TABLE student ADD stuent_nm varcher;
+  ```
 
 ### DML(Data Manipulation Language)
 
 - 데이터 조작 언어. 테이블 안의 실제 데이터를 다루는 언어
+
 - SELECT(조회), INSERT(삽입), UPDATE(수정), DELETE(삭제)
+
+  ```sql
+  # 원하는 컬럼 확인. student 테이블 모든 데이터 조회
+  SELECT * FROM student;
+  
+  INSERT INTO student(name, age, dept) VALUES ('홍길동', 22, '산업공학');
+  
+  # 나이가 가장 어린 학생들 고르기
+  SELECT * FROM student WHERE age IN (SELECT MIN(age) FROM student);
+  
+  # 나이가 21보다 작은 사람 조회
+  SELECT * FROM student WHERE age < 21;
+  
+  # 나이가 20보다 큰 사람 수
+  SELECT COUNT(1) FROM student WHERE age > 20;
+  
+  SELECT dept, COUNT(1) FROM student GROUP BY dept;
+  SELECT dept, COUNT(1) AS dept_num FROM student GROUP BY dept;
+  
+  # 학과 별 나이 합계
+  SELECT dept, SUM(age) AS dept_age_sum FROM student GROUP BY dept;
+  
+  SELECT * FROM student WHERE dept like '산업%';
+  SELECT * FROM student WHERE dept in ('건축공학', '산업공학');
+  
+  SELECT * FROM student WHERE idx BETWEEN 3 and 5;
+  SELECT * FROM student WHERE idx > 2 and idx < 6;
+  
+  # inner join
+  SELECT A.name, A.dept, B.course, B.score from student A join student_score B on A.name=B.student.nm;
+  # outer join
+  SELECT A.name, A.dept, B.course, B.score from student A left outer join student_score B on A.name=B.student.nm WHERE A.dept='건축공학';
+  
+  UPDATE student set age=25 WHERE name="홍길동"
+  
+  DELETE from student where idx=1;
+  ```
 
 ### DCL(Data Control Language)
 
@@ -119,4 +184,15 @@
 ### TCL(Transaction Control Language)
 
 - 트랜잭션 제어 언어
+
 - COMMIT, ROLLBACK, SAVEPOINT
+
+  ```sql
+  # DB액션들을 실제로 파일에 반영
+  commit;
+  
+  # 지금까지 한 작업 취소하고 처음부터 다시시작
+  rollback;
+  ```
+
+  
