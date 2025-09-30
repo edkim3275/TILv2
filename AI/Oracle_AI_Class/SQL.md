@@ -195,4 +195,20 @@
   rollback;
   ```
 
-  
+
+### 벡터 조회
+
+```sql
+# 테이블 생성
+CREATE TABLE product_embeddings (id SERIAL PRIMARY KEY, name TEXT, embedding VECTOR(3)); -- 벡터의 크기를 3으로 설정
+
+# 데이터 삽입
+INSERT INTO product_embeddings (name, embedding) VALUES ('Product A', '[0.1, 0.2, 0.3]'), ('Product B', '[0.5, 0.6, 0.1]'), ('Product C', '[0.9, 0.8, 0.7]');
+
+# 데이터 조회 - 유사도 가장 우선순위에 있는 것(similarity가 가장 작은 값)
+SELECT id, name, embedding <=> '[0.2, 0.3, 0.4]' AS similarity FROM product_embeddings ORDER BY similarity LIMIT 1;
+
+# 데이터 조회
+SELECT id, name, embedding <=> '[0.2, 0.3, 0.4]' AS similarity FROM product_embeddings ORDER BY similarity;
+```
+
