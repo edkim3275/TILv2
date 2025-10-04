@@ -2,14 +2,16 @@
 
 ## Docker
 
-| **명령어**                    | **설명**                             |
-| ----------------------------- | ------------------------------------ |
-| docker-compose up -d          | 백그라운드 실행                      |
-| docker-compose up -d --build  | 새로 빌드해서 실행(최신코드 반영 시) |
-| docker-compose down           | 컨테이너 종료 및 정리                |
-| docker-compose logs -f        | 로그 실시간 보기                     |
-| docker ps                     | 실행 중인 컨테이너 확인              |
-| docker-compose exec blog bash | 블로그 컨테이너 안으로 진입          |
+| **명령어**                           | **설명**                             |
+| ------------------------------------ | ------------------------------------ |
+| docker-compose up -d                 | 백그라운드 실행                      |
+| docker-compose up -d --build         | 새로 빌드해서 실행(최신코드 반영 시) |
+| docker-compose down                  | 컨테이너 종료 및 정리                |
+| docker-compose logs -f               | 로그 실시간 보기                     |
+| docker ps                            | 실행 중인 컨테이너 확인              |
+| docker-compose exec blog bash        | 블로그 컨테이너 안으로 진입          |
+| docker container ls                  | 현재 실행중인 컨테이너 확인          |
+| docker exec -it 컨테이너ID /bin/bash | 해당 컨테이너 실행                   |
 
 ## Prisma
 
@@ -33,12 +35,15 @@
 
 ## Ubuntu
 
-| 명령어                                                       | 설명                                    |
-| ------------------------------------------------------------ | --------------------------------------- |
-| `sudo lsof -i tcp:80`                                        | 현재 80 포트를 사용중인 프로세스들 확인 |
-| `hostname -I`                                                | 내부 IP 주소 확인                       |
-| `nmcli device wifi list`                                     | 주변 wifi 검색                          |
-| `nmcli device wifi connect "공유기이름" password "비밀번호"` | 연결시도                                |
+| 명령어                                                       | 설명                                             |
+| ------------------------------------------------------------ | ------------------------------------------------ |
+| `sudo lsof -i tcp:80`                                        | 현재 80 포트를 사용중인 프로세스들 확인          |
+| `hostname -I`                                                | 내부 IP 주소 확인                                |
+| `nmcli device wifi list`                                     | 주변 wifi 검색                                   |
+| `nmcli device wifi connect "공유기이름" password "비밀번호"` | 연결시도                                         |
+| `usermod -a -G sudo userID`                                  | 사용자에게 sudo 권한                             |
+| `sudo su -`                                                  | (권한을 부여받은 경우에 가능) 루트 사용자로 명령 |
+|                                                              |                                                  |
 
 ## Nginx
 
