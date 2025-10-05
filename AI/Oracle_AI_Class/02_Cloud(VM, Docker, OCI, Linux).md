@@ -1,4 +1,4 @@
-# Day3
+# Cloud
 
 - 총론은 끝나고 본격적인 수업 시작
 
@@ -6,11 +6,11 @@
 
   네이밍이 조금 아쉽지만 생각보다 많은 내용을 다루게 될 것 같아서 기대가 된다 :)
 
-- 이번주는...
+- :dizzy: 이번주는...
 
-  OCI에 Linux 서버를 생성해보며 개발환경 및 운영환경 구성하기
+  OCI에 **Linux 서버를 생성**해보며 **개발환경 및 운영환경 구성**하기
 
-  Linux 활용해보기
+  **Linux 활용**해보기
 
   flask web app, DB 연계(PostgreSQL), LLM 연계(python으로 LLM호출)
 
@@ -18,7 +18,7 @@
 
   입력 => Agent --- DB => LLM
 
-  기본적인 형태는 입력을 Agent가 받아서 LLM이 잘 해석할 수 있는 수준으로 변환하는 역할
+  기본적인 형태는 입력을 Agent가 받아서 **LLM이 잘 해석할 수 있는 수준으로 변환**하는 역할
 
 ## 클라우드
 
@@ -26,11 +26,11 @@
 
   하드웨어(Infrastructure, Host Operating System) > Hypervisior > GuestOS
 
-  :scroll: 현재 핸드폰의 메모리(4~8GB) 경쟁으로 인한 반도체 가격 하락 > CPU, RAM 효율 향상 자원이 늘어나게됨 > 이런 노는 자원을 잘 활용하기 위한 고민 > 물리적 컴퓨터 하나에 여러개의 가상 머신 이를 관리하는 역할 하는 Hypervisor (예. 메모리가 16GB라면 각 GuestOS에 4GB씩 나머지는 HostOS가 사용) > GuestOS
+  >:scroll: 현재 핸드폰의 메모리(4~8GB) 경쟁으로 인한 반도체 가격 하락 > CPU, RAM 효율 향상 자원이 늘어나게됨 > 이런 노는 자원을 잘 활용하기 위한 고민 > 물리적 컴퓨터 하나에 여러개의 가상 머신 이를 관리하는 역할 하는 Hypervisor (예. 메모리가 16GB라면 각 GuestOS에 4GB씩 나머지는 HostOS가 사용) > GuestOS
 
   클라우드 AWS > OCI > MS Azure > Google Cloud >> vultr, linode(가성비, 개인용) >>>>> NAVER, KT :sweat:
 
-- 도커(Docker)
+- 도커(Docker) :whale:
 
   가상 머신 사용에 따른 자원 낭비(CPU, 메모리 사용률 저하) > 효과적으로 사용하기 위한 고민 > 
 
