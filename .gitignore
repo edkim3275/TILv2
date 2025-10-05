@@ -272,3 +272,6 @@ MicroFrontendArchitecture/
 
 # markdown assets
 *.assets/
+
+# TIL.md
+TIL.md
