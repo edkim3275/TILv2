@@ -8,15 +8,15 @@ HTTP 프로토콜은 기본적으로 **상태를 유지하지 않는(stateless) 
 
 결국 "사용자 너 어떻게 인증할래?"에 대한 여러가지 해결방식인 것. 서버에서 사용자 인증을 위한 정보를 실어서 클라이언트에게 보내고, 해당 정보를 통신에 사용하는 것.
 
-## JWT?
+## JWT
 
-JSON Web Token의 약자로, 정보를 안전하게 전송하기 위한 일종의 토큰 형식. 주로 웹 통신에서 사용되고, 특히 인증 및 권한 부여를 위해 자주 활용됨.
+JWT는 JSON Web Token의 약자로, 정보를 안전하게 전송하기 위한 일종의 토큰 형식. 주로 웹 통신에서 사용되고, 특히 인증 및 권한 부여를 위해 자주 활용됨.
 
-> *토큰*
+> _토큰_(token)
 >
 > 일반적으로 컴퓨터 시스템에서 사용자나 프로그램이나 서버가 자신의 신원을 증명하거나 특정 자원에 접근하도록 하는 데 사용되는 작은 조각의 정보를 나타냄. JWT는 특정한 목적(정보 교환 및 인증 및 권한 부여)을 위해 JSON 형식으로 설계된 토큰 형식
 
-### JWT 구조
+### JWT의 구조
 
 기본적으로 육안으로 해석하기 어려운 문자열로 만들어져 있고, https://jwt.io/ 에서 해독(decode)하면 JSON형태로 들어있는 정보를 확인할 수 있다.
 <img width="708" alt="image-20231203162838328" src="https://github.com/edkim3275/TILv2/assets/77393619/e59f8a48-f120-49b8-87b1-bcd27bcb389b">
@@ -46,7 +46,7 @@ xxxxxxxxxx.yyyyyyyyyy.zzzzzzzzzz
    ```json
    {
      "name": "username",
-     "sub": "1294392",
+     "sub": "1294392"
    }
    ```
 
@@ -69,7 +69,7 @@ xxxxxxxxxx.yyyyyyyyyy.zzzzzzzzzz
 
 ### JWT의 특징
 
-- 정보를 안전하게 전송하고, 서버와 클라간에 상태를 유지하지 않고(statelessness)도 사용자를 식별하고 권한을 부여할 수 있게 해준다.
+- 정보를 안전하게 전송하고, 서버와 클라간에 상태를 유지하지 않고(stateless)도 사용자를 식별하고 권한을 부여할 수 있게 해준다.
 - 세션을 유지하지 않고도 상태를 관리할 수 있는 무상태성의 특성을 제공
 - 사용자 인증 후 서버는 JWT를 생성하여 클라이언트에게 전달하고, 클라이언트는 이를 이용하여 서버에 대한 요청을 할 수 있음.
 - **인증 정보를 서버쪽에 저장하지 않는다**는 점. 클라이언트가 JWT를 사용하여 자신의 상태를 유지하게되므로, 서버는 무상태한 아키텍처를 유지할 수 있다.
@@ -98,18 +98,22 @@ xxxxxxxxxx.yyyyyyyyyy.zzzzzzzzzz
 
    ```javascript
    // 쿠키에 저장했을 경우
-   const jwtToken = document.cookie.split('; ').find(cookie => cookie.startsWith('jwt='));
-   const jwtToken = jwtTokenFromCookie ? jwtTokenFromCookie.split('=')[1] : null;
+   const jwtToken = document.cookie
+     .split("; ")
+     .find((cookie) => cookie.startsWith("jwt="));
+   const jwtToken = jwtTokenFromCookie
+     ? jwtTokenFromCookie.split("=")[1]
+     : null;
    // 로컬스토리지에 저장했을 경우
-   const jwtToken = localStorage.getItem('jwtToken');
+   const jwtToken = localStorage.getItem("jwtToken");
    // 세션스토리지에 저장했을 경우
-   const jwtToken = sessionStorage.getItem('getToken')
+   const jwtToken = sessionStorage.getItem("getToken");
    fetch(url, {
-     method: 'GET',
+     method: "GET",
      headers: {
-       'Authorization': `Bearer ${jwtToken}`
-     }
-   })
+       Authorization: `Bearer ${jwtToken}`,
+     },
+   });
    ```
 
 5. JWT 검증(서버에서 클라이언트의 요청 처리)
@@ -140,7 +144,7 @@ xxxxxxxxxx.yyyyyyyyyy.zzzzzzzzzz
 
 ## 세션
 
-- 방문자가 웹서버에 접속해 있는 상태를 하나의 단위로 보고 그것을 session이라고 한다. 
+- 방문자가 웹서버에 접속해 있는 상태를 하나의 단위로 보고 그것을 session이라고 한다.
 
   웹 서버는 이러한 각 단위에 대한 세션 식별자(sessionID)를 부여하고 같은 브라우저인지 구별한다.
 
@@ -164,7 +168,7 @@ xxxxxxxxxx.yyyyyyyyyy.zzzzzzzzzz
 
 2. 세션 식별자 부여
 
-   클라이언트로 부터 받은 로그인 정보가 올바르면 세션 객체를 생성하여 해당 사용자에 대한 정보(ID, 권한 등)를 세션에 저장, 세션 정보를 유지하기 위해 서버는 클라이언트에게 고유한 세션 식별자를 할당하고, 이를 `Set-cookie`를 통해 클라이언트에게 전달. 일반적으로 쿠키를 사용하여 세션 식별자를 클라이언트에게 부여. 
+   클라이언트로 부터 받은 로그인 정보가 올바르면 세션 객체를 생성하여 해당 사용자에 대한 정보(ID, 권한 등)를 세션에 저장, 세션 정보를 유지하기 위해 서버는 클라이언트에게 고유한 세션 식별자를 할당하고, 이를 `Set-cookie`를 통해 클라이언트에게 전달. 일반적으로 쿠키를 사용하여 세션 식별자를 클라이언트에게 부여.
 
    세션 객체는 서버에 저장해놓는다.
 
@@ -200,31 +204,31 @@ xxxxxxxxxx.yyyyyyyyyy.zzzzzzzzzz
 
 ## 쿠키
 
-쿠키(Cookie)는 **클라이언트 측에 저장되는 키-값 쌍으로 이루어진 작은 데이터 조각**을 의미한다.  즉 세션 식별자를 쿠키로 저장한다는 것은 해당 세션 식별자 값을 쿠키 형태로 클라이언트에 저장하는 것을 의미한다.
+쿠키(Cookie)는 **클라이언트 측에 저장되는 키-값 쌍으로 이루어진 작은 데이터 조각**을 의미한다. 즉 세션 식별자를 쿠키로 저장한다는 것은 해당 세션 식별자 값을 쿠키 형태로 클라이언트에 저장하는 것을 의미한다.
 
 브라우저는 쿠키를 요청 헤더에 포함하여 서버에 요청을 보내므로, 개발자는 주로 이러한 과정을 명시적으로 다루지는 않는다. 즉, 서버로 요청을 보낼 때 브라우저는 해당 도메인에 저장된 모든 쿠키를 요청 헤더에 자동으로 포함시키게 됨.
 
 ```javascript
-fetch('/login', {
-  method: 'POST',
+fetch("/login", {
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   body: JSON.stringify({
-    username: 'name',
-    password: 'pw'
-  })
+    username: "name",
+    password: "pw",
+  }),
 })
-	.then(res => res.json())
-	.then(data => {
-  	// 1. 서버 응답에 Set-Cookie헤더가 있다면, 브라우저가 해당 쿠키를 저장함
-  	// 2. 이후 다른 요청에서는 브라우저가 자동적으로 쿠키를 요청 헤더에 포함시킴
-  	fetch('/otherEndpoint', {
-      method: 'GET'
+  .then((res) => res.json())
+  .then((data) => {
+    // 1. 서버 응답에 Set-Cookie헤더가 있다면, 브라우저가 해당 쿠키를 저장함
+    // 2. 이후 다른 요청에서는 브라우저가 자동적으로 쿠키를 요청 헤더에 포함시킴
+    fetch("/otherEndpoint", {
+      method: "GET",
     })
-  		.then(response => response.json())
-  		.then(data => console.log(data))
-	})
+      .then((response) => response.json())
+      .then((data) => console.log(data));
+  });
 ```
 
 쿠키에는 다양한 설정 옵션이 존재한다.
@@ -249,32 +253,32 @@ Set-Cookie: session_id=abcdef123456; Path=/; Expires=Wed, 01 Jan 2023 00:00:00 G
 
 ```javascript
 // 로그인 성공 시 클라이언트에게 세션 식별자를 쿠키로 설정하는 예제
-const express = require('express');
-const crypto = require('crypto');
+const express = require("express");
+const crypto = require("crypto");
 const app = express();
 
 const generateSessionId = (length) => {
-  return crypto.randomBytes(length).toString('hex');
-}
-app.post('/login', (req, res) => {
+  return crypto.randomBytes(length).toString("hex");
+};
+app.post("/login", (req, res) => {
   // 길이가 16인 랜덤한 세션 식별자 생성
   const sessionID = generateSessionId(16);
-  
+
   const expirationDate = new Date();
   // expirationDate 일 년으로 설정
-	// expirationDate.setFullYear(expirationDate.getFullYear()+1);
+  // expirationDate.setFullYear(expirationDate.getFullYear()+1);
   // expirationDate 하루로 설정
   expirationDate.setHours(expirationDate.getHours() + 24);
-  
-  res.cookie('session_id', sessionID, {
-    path: '/', // 모든 경로에서 유효(path는 하나의 경로만 지정 가능하고 해당 경로의 하위 모든 경로에서 유효하게 됨)
+
+  res.cookie("session_id", sessionID, {
+    path: "/", // 모든 경로에서 유효(path는 하나의 경로만 지정 가능하고 해당 경로의 하위 모든 경로에서 유효하게 됨)
     expires: expirationDate,
     secure: true,
     httpOnly: true,
-  })
-  
-  res.send('Login successful')
-})
+  });
+
+  res.send("Login successful");
+});
 ```
 
 ## 로컬 스토리지 vs. 세션 스토리지 vs. 세션 vs. 쿠키
@@ -331,3 +335,127 @@ app.post('/login', (req, res) => {
   5. 서버 리소스 감소
 
      서버에 세션 상태를 저장하는 것은 메모리 또는 데이터베이스 자원을 사용하게 됨. 따라서 쿠키에 세션 식별자를 저장하면 클라이언트 측에서 상태를 유지하므로 서버 리소스 사용을 줄일 수 있음.
+
+## Q&A
+
+### Access token & Refresh token
+
+- refresh token 토큰의 필요성에 대한 궁금증
+
+  사용자 인증 방식을 JWT 방식으로 구현할 때 생겨난 질문. 서버에서 JWT 생성 시 아래와 같이 토큰의 만료기한을 설정한다.
+
+  ```js
+  const jwt = jwt.sign({ username }, secret_key, { expiresIn: "1h" });
+  ```
+
+  이를 클라이언트에 보내는 응답에 담아서 보내고 생성 된 토큰은 쿠키에 저장된다.(서버 응답에 Set-Cookie 헤더가 있다면, 브라우저가 해당 쿠키를 저장한다.)
+
+  ```js
+  res.setHeader(
+    "Set-Cookie",
+    `token=${token}; Path=/; HttpOnly; SameSite=Strict`
+  );
+  ```
+
+  이후 쿠키에 저장된 토큰은 클라이언트에서 서버에 요청 시 브라우저가 자동적으로 쿠키를 요청 헤더에 포함시킨다. 여기서 요청 시에 토큰울 생성할 때 설정해둔 만료기한이 지나가게 되면 서버에서 토큰 검증시 아래와 같은 에러가 발생한다.
+
+  ```js
+  // Next.js에서 jose 라이브러리 사용시
+  import { jwtVerify } from 'jose';
+
+  const token = request.cookies.get("token")?value;
+  ...
+  // Middleware - Error: JWTExpired: "exp" claim timestamp check failed at async middleware
+  const { payload } = await jwtVerify(token, secret);
+  ```
+
+  ![image-20250415010230440](./JWT.assets/image-20250415010230440.png)
+
+  :thinking: 그렇다면 미리 서버에서 특정 시간(예를들어 5분)을 설정해두고 클라이언트의 요청에서 확인한 토큰의 만료 기한이 해당 특정 시간 이내로 남았다면 서버에서 새로 발급을 해주면 되지 않을까? 그런데도 왜 refresh token이라는 토큰을 하나 더 발급해서 프로세스를 복잡하게 만드는지 이해가 가질 않아서 좀 더 찾아보기로 했다.
+
+- 일단 위에서 요청에 담겨있는 "access token"이 만료되면 서버는 이를 401 Unauthorized로 응답한다. 근데 클라이언트는 요청을 보내기전에 토큰이 만료가 되었는지 아닌지를 정확히 모른 채로 요청할 수 있다.
+
+  왜냐면 HttpOnly 쿠키에 있으므로 JS로 토큰 내용을 꺼내볼 수가 없다. 따라서 일반적인 흐름은 아래와 같다.
+
+  - 클라이언트는 그냥 API 요청(토큰이 완료됐는지 알 수 없음)
+  - 서버가 401 Unauthorized로 응답함
+  - 클라이언트는 받은 응답으로 토큰이 만료된 것을 판단하여 refresh 토큰을 담아서`/api/refresh` 와 같은 요청으로 새로운 토큰을 요청
+  - 새로운 access token을 받은 후 원래 요청 재시도
+
+- 만료 전 자동갱신→ 가능하지만 현재 프로젝트에서는 불가능
+
+  토큰이 만료 되기 전에 자동 갱신하는 방법도 존재한다. 즉, 클라이언트가 토큰 만료 시간을 알고 있다면 미리 refresh해서 갱신할 수 있다. 하지만 이 또한 access token을 클라이언트가 읽을 수 있어야한다. localStorage나 JS-readable 쿠키에 저장해만 가능하겠지만 HttpOnly 쿠키를 사용할 경우 남은 시간을 JS에서 알 수 없다.
+
+- 결국 refresh 토큰이 필요한 이유는
+
+  :closed_lock_with_key: 보안 + 사용자 경험
+
+  access token은 만료를 짧게 잡고(안정성 향상), 이로 인해 발생할 수 있는 사용자 경험 저하(짧아진 만료시간으로 인해 로그인을 자주해야하는 경우 등)는 refresh token으로 해결하자는 것
+
+- 여기서 문제는 refresh token이 탈취되면 access token을 발급해주는 토큰이 탈취된 것이라 access token이 계속 발급될 수 있다는 것.
+
+  이에 대해 refresh token 보안 강화 전략들도 존재
+
+  - HttpOnly + Secure 쿠키 : JS 접근 불가 + HTTPS 전용
+  - Short-lived Refresh Token + Rotation : 매번 새로 발급하고, 이전 건 폐기
+  - Device 바인딩 : refresh token을 user-agent, IP 등에 묶어서 재발급 재한
+  - 서버 저장 : refresh token을 DB에 저장해서 강제로 revoke 가능하게 함
+  - 사용자 로그아웃 시 서버에서 token 삭제
+
+- HttpOnly + Secure 쿠키
+
+  - HttpOnly : JS에서 접근 불가 → XSS로부터 보호
+  - Secure 쿠키 : HTTPS 연결일 때만 쿠키 전송 → 중간자 공격 방지
+
+  적용방법
+
+  ```js
+  res.setHeader("Set-Cookie", [
+    `refreshToken=${token}; HttpOnly; Secure; Path=/api/refresh; SameSite=Strict; Max-Age=604800`,
+  ]);
+  ```
+
+- Device 바인딩 / 세션 정보에 묶기
+
+  - refresh 토큰을 발급할 때, 디바이스 정보/IP/user-agent/fingerprint 같은 걸 함께 서버 DB에 저장
+
+    ```json
+    {
+      "refreshToken": "efwjfjewjoinwef...",
+      "userId": 123,
+      "userAgent": "Chrome 123", // 브라우저 종류와 OS 정보
+      "ip": "123.123.1.1",
+      "fingerprint": "xyz789" // 브라우저, 폰트, 화면크기 등 조합으로 만든 디바이스 고유 값(보통 fingerprint.js 같은 라이브러리로 생성)
+    }
+    ```
+
+  - 이후 refresh 시도 시 매치되는 디바이스에서만 허용
+
+  - 이렇게되면 탈취한 토큰이 다른 디바이스에서 쓰이면 차단되고, multi-device 로그인도 관리가 가능하다.
+
+- 서버 저장(refresh token 서버측 보관)
+
+  - refresh token을 서버 DB에 저장하고(클라이언트에서도 HttpOnly 쿠키에 저장), 클라이언트에서 refresh 요청 시, 서버 DB에 있는지 확인해서 유효성을 검증하는 것
+
+### Token Validation Check
+
+- JWT 유효성 '검증'에서 검증한다는 것이 무엇일까?
+
+  ```js
+  // 아래 코드 설명 : TextEncoder는 Web API의 일부로 문자열을 Uint8Array로 변환하는 데 사용됩니다.
+  // TextEncoder().endode(string) 메서드는 문자열을 UTF-8로 인코딩하여 Uint8Array를 반환합니다.
+  const secret = new TextEncoder().encode(JWT_SECRET_KEY);
+  // jwtVerify는 jose 라이브러리의 함수로, JWT를 검증하는 데 사용됩니다.
+  // 이 함수는 JWT와 비밀 키를 인자로 받아 JWT의 유효성을 검사합니다.
+  // 유효성 검증 방식은 HMAC, RSA, ECDSA 등 다양한 알고리즘을 지원합니다.
+  // jose 라이브러리는 그 중에서 HMAC 알고리즘을 사용하여 JWT를 검증합니다.
+  // 검증된다는 것은 JWT의 서명이 비밀 키와 일치하는지를 확인하는 것입니다.
+  // 즉, JWT 서명은 비밀 키로 생성되며, 이 비밀 키를 사용하여 JWT의 서명을 검증합니다.
+  // jwtVerify는 Promise를 반환하므로 await를 사용하여 결과를 기다립니다.
+  // 검증이 성공하면 payload를 반환합니다.
+  const { payload } = await jwtVerify(token, secret);
+  ```
+
+### XSS
+
+- 토큰을 어떻게 탈취한다는 거야?
