@@ -382,6 +382,8 @@
 
 ## 임베딩
 
+### 임베딩
+
 - 데이터 임베딩 혹은 벡터화는 컴퓨터가 이해하고 처리할 수 있도록 텍스트, 이미지, 소리 등 다양한 형태의 데이터를 고차원 벡터 공간의 숫자 벡터로 변환하는 과정
 
 - 서로 다른 데이터 간의 관계와 유사성을 숫자를 통해 표현하기 때문에, 기계 학습 모델이 데이터를 더 효율적으로 학습하고 연산할 수 있도록 한다.
@@ -416,6 +418,131 @@
 
   - Sentence Transformer : age-m3 / arctic-embed 등
 
+### huggingface
+
+- 임베딩 모델을 다운로드 하기 위해서 허깅페이스를 활용한다. 
+
+- https://huggingface.co/
+
+- public 모델의 경우 바로 사용이 가능하고 access 토큰을 발급받고 사용해야하는 모델도 존재함.
+
+- 사전 작업
+
+  - huggingface access token 발급
+
+  - python 가상환경 생성
+
+  - 가상환경 activate 후 huggingface_hub 설치
+
+    (.venv) $ pip install huggingface_hub
+
+  - 설치 후, huggingface에서 발급받은 token을 자신의 서버의 huggingface 환경에 설정한다.
+
+    (.venv) $ huggingface-cli login --token hf_token_key
+
+  - sentence_transformers 패키지 추가
+
+    $ pip install -U sentence_transformers
+
+  - 웹 서버 실행을 위한 unicorn 패키지 추가
+
+    $ pip install unicorn
+
+### huggingface를 통해 모델 다운받아서 임베딩하기
+
+- 모델 다운로드 및 테스트 하기
+
+  ```python
+  from sentence_transformers import SentenceTransformer
+  senetences = ["안녕하세요?", "한국어 문장 임베딩을 위한 버트 모델입니다."]
+  
+  model = SentenceTransformer('jhgan/ko-sroberta-multitask')
+  embeddings = model.encode(sentences)
+  print(embeddings) # 각각의 문장이 768 차원(dimension; dim)의 벡터로 변환된다.
+  print("벡터 차원: ", len(embeddings))
+  ```
+
+  ```
+  # 각각의 문장이 768차원의 벡터로 변환된다.
+  # 유사한 의미의 문장은 유사한 값의 벡터로 변환된다.
+  "안녕하세요" => [-0.3751049 -0.7733841 0.592771 ... 0.5792352 0.32683495 -0.6508965 ]
+  "한국어 ... 모델입니다." => [-0.09361727 -0.18191542 -0.19230759 ... -0.03165785 0.30412525 -0.2679364 ]
+  ```
+
+### 사용자가 보낸 문장 임베딩해주는 웹 서비스 만들기
+
+- 임베딩 서비스(Server)
+
+  ```python
+  # -*- coding: utf-8 -*-
+  from fastapi import FastAPI, Request
+  from sentence_transformers import SentenceTransformer
+  from pydantic import BaseModel
+  
+  # FastAPI 애플리케이션 생성
+  app = FastAPI()
+  
+  # 임베딩 모델 로드(앱 시작 시 한 번만 로드하여 효율성을 높인다)
+  model = SentenceTransformer('jhgan/ko-sroberta-multitask')
+  
+  # 요청 본문을 위한 Pydantic 모델 정의
+  class TextRequst(BaseModel):
+    sentences: List[str]
+    
+  # 응답 본문을 위한 Pydantic 모델 정의
+  class EmbeddingsResponse(BaseModel):
+    embeddings: List[List[float]]
+    
+  # 임베딩을 수행하는 API 엔드포인드
+  @app.post("/embed/", response_model=EmbeddingsResponse)
+  def get_embeddings(request: TextRequst):
+    # 모델이 이미 지정된 GPU에 로드되어 있으므로 별도의 설정 불필요
+    embeddings = model.encode(request.sentences, convert_to_numpy=True)
+    # numpy 배열을 python 리스트로 변환
+    embeddings_list = embeddings.tolist()
+    # pydantic 모델을 사용하여 응답 반환
+    return {"embeddings": embeddings_list}
+  ```
+
+  ```bash
+  # embedding_server.py로 저장 후 unicorn으로 실행
+  unicorn embedding_server:app --reload --host=0.0.0.0 --port=5050
+  ```
+
+- 임베딩 서비스(Client)
+
+  ```python
+  # -*- coding: utf-8 -*-
+  import requests
+  
+  # API 엔드포인트
+  url = "http://localhost:5050/embed/"
+  
+  # POST 요청으로 전송할 데이터
+  data = {
+    "sentences": ["안녕하세요?", "한국어 문장 임베딩을 위한 버트 모델입니다."]
+  }
+  
+  # request.post() 함수를 사용하여 POST 요청 보내기
+  # json = data를 사용하면 자동으로 Content-Type: application/json 헤더가 설정됨
+  try:
+    response = requests.post(url, json=data)
+    # 응답 상태 코드 확인
+    response.raise_for_status() # 200번대 응답 아니면 예외
+    # JSON 응답을 파이썬 딕셔너리로 변환
+    embeddings_result = response.json()
+    # 결과 출력
+    print("API 응답 상태 코드:", response.status_code)
+  	print("임베딩 결과:")
+    for idx, embedding in enumerate(embeddings_result['embeddings'], 1):
+      print(f"문장 {idx} 임베딩 벡터 길이: {len(embedding)}")
+      print(f"임베딩 예시 (앞 5개): {embedding[:5]}")
+    except requests.exception.RequestException as e:
+      print(f"오류가 발생했습니다: {e}")
+  ```
+
 ## TODO
 
-> 증권 사이트 데이터 수집해서 DB에 넣고 검색해서 찾는 것
+- 데이터를 임베딩하여 벡터를 DB에 저장하기
+- 증권 사이트 데이터 수집해서 DB에 넣고 검색해서 찾는 것
+- Flask를 이용한 데이터 portal 만들기
