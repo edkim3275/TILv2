@@ -212,3 +212,70 @@ SELECT id, name, embedding <=> '[0.2, 0.3, 0.4]' AS similarity FROM product_embe
 SELECT id, name, embedding <=> '[0.2, 0.3, 0.4]' AS similarity FROM product_embeddings ORDER BY similarity;
 ```
 
+## 🔑 기본 키(Primary Key)
+
+- 기본 키는 테이블에서 각 행(row)을 유일하게 구분할 수 있는 컬럼
+
+- 즉, 이 테이블 안에서 같은 값을 가지면 안 되는 열
+
+- 기본 키는 자동으로 NOT NULL + UNIQUE
+
+  - NOT NULL : 값이 반드시 있어야 함
+  - UNIQUE : 중복된 값이 있으면 안 됨
+
+  ```sql
+  -- 완전히 동일한 의미의 표현
+  id serial primary key;
+  id serial not null unique;
+  ```
+
+- PRIMARY KEY vs. UNIQUE KEY
+
+  | 구분             | PRIMARY KEY                              | UNIQUE KEY                          |
+  | ---------------- | ---------------------------------------- | ----------------------------------- |
+  | 목적             | 테이블의 대표 식별자(행을 유일하게 구분) | 중복을 막는 보조 제약 조건          |
+  | NULL 허용 여부   | 불가능                                   | 가능(NULL은 중복으로 간주되지 않음) |
+  | 중복 허용 여부   | 불가능                                   | 불가능(NULL은 예외)                 |
+  | 테이블당 개수    | 1개                                      | 여러 개 가능                        |
+  | 자동 인덱스 생성 | 자동 생성됨                              | 자동 생성됨                         |
+  | 주요 역할        | 데이터의 "고유 ID" 역할                  | 특정 컬럼의 "값 중복 방지"          |
+
+- 복합 기본 키(composite primary key)
+
+  두 개 이상의 컬럼을 묶어서 하나의 기본 키로 지정하는 것. 즉, 각각은 중복될 수 있어도 두 컬럼의 조합이 같으면 안 된다.
+
+  ```sql
+  CREATE TABLE orders (
+  	user_id int,
+    product_id int,
+    quantity int,
+    primary key (user_id, product_id)
+  );
+  ```
+
+  이렇게 되면 user_id = 1, product_id = 1 조합으로 (1, 1)은 가능하시만 다른 행에서 또 다시 user_id = 1, product_id = 1 이 될 순 없다.
+
+## 🧱 SQL 주요 자료형(PostgreSQL 기준)
+
+| 분류                    | 자료형                        | 설명                           | 예시                                   |
+| ----------------------- | ----------------------------- | ------------------------------ | -------------------------------------- |
+| 문자열형(string)        | char(n)                       | 고정 길이 문자열               | 'ABC'                                  |
+|                         | varchar(n)                    | 가변 길이 문자열               | '삼성전자'                             |
+|                         | text                          | 길이 제한 없는 문자열          | '굉장히 긴 텍스트입니다.'              |
+| 정수형(integer)         | smallint                      | 2바이트 정수(-32,768 ~ 32,767) | 123                                    |
+|                         | integer(int)                  | 4바이트 정수                   | 10000                                  |
+|                         | bigint                        | 8바이트 정수                   | 9999999999                             |
+| 자동 증가형             | serial                        | 자동 증가 4바이트 정수         | 1, 2, 3                                |
+|                         | bigserial                     | 자동 증가 8바이트 정수         |                                        |
+| 실수형(Float / Decimal) | real                          | 4바이트 부동소수점             | 3.14                                   |
+|                         | double precision              | 8바이트 부동소수점             | 3.14159265                             |
+|                         | numeric(p, s) / decimal(p, s) | 고정 소수점(정확도 필요 시)    |                                        |
+| 날짜 / 시간형           | date                          | 날짜                           | 2025-10-10                             |
+|                         | time                          | 시간(시:분:초)                 | 13:45:00                               |
+|                         | timestamp                     | 날짜+시간                      | 2025-10-10 13:45:00                    |
+|                         | timestamptz                   | 시간대 포함한 날짜+시간        | 2025-10-10 13:45:00+09                 |
+| 논리형(Boolean)         | boolean                       | 참/거짓 값                     | TRUE, FALSE                            |
+| 기타                    | bytea                         | 이진 데이터(바이너리)          | 이미지, 파일                           |
+|                         | Json, jsonb                   | JSON 데이터                    | '{"name":"Edgar"}'                     |
+|                         | uuid                          | 고유 식별자(UUID)              | '550e8400-e29b-41d4-a716-446655440000' |
+
