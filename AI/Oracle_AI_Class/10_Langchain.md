@@ -36,22 +36,38 @@
 - LCEL 멀티 체인 구조
 
   체인은 하나만 존재할 수도있지만 하나의 체인에서 나온 결과를 다음 체인의 입력으로 사용하는, 즉 여러 체인을 순차적으로 연결하여 더 복잡한 작업을 수행하는 것이 가능하다.
+  
+  ```
+  multi_chain = chain_1 | chain_2
+  ```
 
 ## Runnable
 
 - Langchain이 "왜 유연한 구조"인지 알 수 있는 부분
 
-- 요약하면 Runnable은 "입력을 받아서 결과를 내는 표준형 인터페이스". Langchain을 구성하는 모든 컴포넌트는 Runnable 인터페이스를 구현하고 있다. 따라서 모든 컴포넌트가 동일 메서드를 통해 실행될 수 있고 파이프 연산자로 연결되어 하나의 "체인"처럼 동작할 수 있다.
+- 요약하면 Runnable은 "입력을 받아서 결과를 내는 표준형 인터페이스". **Langchain을 구성하는 모든 컴포넌트는 Runnable 인터페이스를 구현하고 있다. 따라서 모든 컴포넌트가 동일 메서드를 통해 실행될 수 있고 파이프 연산자로 연결되어 하나의 "체인"처럼 동작할 수 있다.**
 
-- Runnable; 실행할 수 있는 것. Langchain에서는 "입력(input)"을 받아서, 어떠한 처리를 한 뒤, "결과(output)"를 내는 모든 것은 Runnable이라고 부른다. 간단하게 
+- Runnable; 실행할 수 있는 것. Langchain에서는 "입력(input)"을 받아서, 어떠한 처리를 한 뒤, "결과(output)"를 내는 모든 것은 Runnable이라고 부른다.
 
 - LLM, PromptTemplate, Chain, Tool, OutputParser ... 모두 Runnable
 
 - Runnable의 아이디어는 내부적으로 **모든 요소들을 하나의 공통 인터페이스**로 묶어버린 것. 그래서 각각이 아래의 공통 메서드를 가진다.
 
   - invoke() : 답변 한번에 출력
+
   - stream() : 실시간 스트리밍으로 답변 출력
+
   - batch() : 여러 입력에 대해 한 번에 답변하는 형태
+
+    ```python
+    prompt = ChatPromptTempalte.from_template("{programming_language"에 대한 3줄 요약."
+    )
+    question = {
+      "programming_language": "JavaScript",
+      "programming_language": "Vue.js"
+    }
+    chain.batch(question)
+    ```
 
 - 모든 종류의 객체들이 Runnable 프로토콜을 따르기 때문에 `|`(파이프) 연산자 하나로 간단하게 연결 가능
 
@@ -171,7 +187,7 @@
   )
   ```
 
-- 보통 ChatModel에서 설정해도 답변을 잘 받아볼 수 있어서 기본적으로는 잘 사용하진 않음(역할군이 정해져있다는 느낌이긴 해서 목적성에 따라 사용해도 될듯)
+- **보통 ChatModel에서 설정해도 답변을 잘 받아볼 수 있어서 기본적으로는 잘 사용하진 않음**(역할군이 정해져있다는 느낌이긴 해서 목적성에 따라 사용해도 될듯)
 
 - FewShotChatMessagePromptTemplate
 
@@ -281,11 +297,44 @@
 ## Document Loader
 
 - 검색 증강 생성(RAG; Retrieval-Augmented Generation) 시스템에서의 가장 첫 번째 단계
+
 - PDF, 웹페이지, CSV 등 다양한 소스의 데이터를 LLM이 처리할 수 있도록 표준화된 Document 객체로 가져오는 구성요소
+
 - Document는 Langchain에서 텍스트 데이터를 다루는 가장 기본적인 단위
+
 - Document 객체의 두 가지 주요 속성
   - page_content : 문서의 실제 텍스트 내용이 담기는 부분
   - metadata : 문서의 부가 정보가 담기는 딕셔너리. 파일 출처(source), 몇 페이지인지(page) 등을 기록하여 나중에 답변의 출처를 밝히는 데 매우 유용하게 사용됨
+
+- PyPDFLoader : pdf
+
+  ```python
+  from lanchain_community.document_loaders import PyPDFLoader
+  
+  FILE_PATH="..."
+  file_loader = PyPDFLoader(FILE_PATH)
+  docs = file_loader.load() # Document를 담은 리스트
+  print(docs[0].metadata) # 메타데이터
+  print(docs[0].page_content) # 본문 내용
+  ```
+
+  CSVLoader : .csv
+
+  TextLoader : .txt
+
+  WebBaseLoader : html
+
+  :bulb: Docx2txtLoader : .docx
+
+  ```python
+  # 사용전 docx2txt 패키지 설치
+  # docx파일 txt 변환해주는 document loader
+  from langchain_community import Docx2txtLoader
+  
+  FILE_PATH="..."
+  file_loader = Docx2txtLoader(FILE_PATH)
+  docs = file_loader.load() # Document를 담은 리스트
+  ```
 
 ## TextSplitter
 
@@ -306,14 +355,86 @@
 
   - RecursiveCharacterTextSplitter : 지정된 구분자 리스트 기준으로 분할(대부분 이를 사용) :white_check_mark:
 
-    ...
+    ```python
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
+    from langchain_community.document_loaders import PyPDFLoader
+    
+    ##### 1. 텍스트 분할하기
+    sample_text = "..."
+    
+    # text splitter 초기화
+    text_splitter = RecursiveCharacterTextSplitter(
+    	chunk_size=100,    # 청크의 최대 크기
+      chunk_overlap=20,  # 청크 간 겹치는 문자 수
+    )
+    
+    # split_text() 메서드는 텍스트를 받아서 분할
+    chunks = text_splitter.split_text(sample_text) # list[str]
+    
+    ##### 2. 문서 분할하기
+    FILE_PATH = "..."
+    file_loader = PyPDFLoader(FILE_PATH)
+    docs = file_loader.load()
+    
+    text_splitter = RecursiveCharacterTextSplitter(
+    	chunk_size=500,    # 청크의 최대 크기
+      chunk_overlap=50   # 청크 간 겹치는 문자 수
+    )
+    
+    # split_documents() 메서드는 Document 객체 리스트를 받아서 분할
+    chunks = text_splitter.split_documents(docs)
+    ```
+    
+    
 
 ## Embedding
 
 - RAG 시스템의 세 번째 단계
+
 - 기계가 이해할 수 있는 형태로 변환하는 과정
+
 - 얼마나 임베딩을 잘하느냐에따라 받을 수 있는 결과값이 크게 달라짐
+
 - 벡터 검색으로 인해 의미를 가진 검색이 가능해짐
+
+- langchain embedding
+
+  ```python
+  # 다양한 임베딩 모델 활용가능
+  from langchain_openai import OpenAIEmbeddings
+  from dotenv import load_dotenv
+  
+  # API key load
+  load_dotenv()
+  # 임베딩 모델 초기화
+  embeddings_model = OpenAIEmbeddings(model="text-embedding-3-small")
+  ##### 여러 문서 임베딩
+  ##### RAG에서 문서를 벡터 DB에 저장할 때 사용됩니다.
+  documents = [
+    "...",
+    "...",
+    "..."
+  ]
+  document_embeddings = embeddings_model.embed_documents(documents) # list[list[float]] 반환
+  
+  ##### 단일 텍스트 임베딩
+  ##### RAG에서 사용자 질문을 벡터로 변환할 때 사용됩니다.
+  query = ""
+  query_embedding = embeddings_model.embed_query(query)
+  ```
+
+- 모델 별 차원(Dimension)
+
+  | 모델                                    | 벡터차원      |
+  | --------------------------------------- | ------------- |
+  | OpenAI                                  | 1536          |
+  | HugginFace(jhgan/ko-sroberta-multitask) | 384 or 768    |
+  | BERT-base                               | 768           |
+  | SentenceTransformer                     | 384~1024 다양 |
+
+  차원이 높을 수록 더 풍부한 표현력을 가지고 미세한 의미 구분이 가능하지만 메모리, 저장공간이 커지고 검색 속도가 느려지는 단점이 존재.
+
+  차원이 낮을 수록 빠르고, 가볍고 효율적이지만 세밀한 의미 구분이 떨어질 수 있다는 점에서 유의해야함
 
 ### 유사도 검색
 
@@ -350,20 +471,96 @@
 
 - 데이터 규모가 커지면 정규화 적용 유무에 따른 효과 차이가 커짐
 
+- OpenAIEmbeddings
+
+  OpenAi의 최신 모델은 모델 자체가 이미 정규화된 벡터를 출력하도록 설계되어있음
+
 ## VectorStore
 
 - RAG 시스템의 네 번째 단계
-- 임베딩한 데이터를 저장하고 관리하는 단계
+
+- 생성된 임베딩 벡터 데이터들을 저장하고 관리하는 단계
+
+-  langchain vectorstore
+
+  ```python
+  from langchain_postgres import PGVector
+  
+  # DB 연결정보 정의
+  db_config = {...}
+  
+  # langchain용 연결 문자열을 다시 생성
+  CONNECTION_STRING = PGVector.connection_string_from_db_params(
+  	driver="psycopg",
+    host=db_config["host"],
+    port=db_config["port"],
+    database=db_config["database"],
+    user=db_config["user"],
+    password=db_config["password"]
+  )
+  
+  # 테이블 이름
+  COLLECTION_NAME = ".."
+  
+  # 임베딩 모델 및 샘플 문서
+  embeddings_model = OpenAIEmbeddings(model="text-embedding-3-small")
+  documents = [Document(page_content="...")]
+  
+  # PGVector.from_documents() 새로 생성해서 넣는 것
+  vector_store = PGVector.from_documents(
+    documents=documents, # documents 리스트 안의 텍스트 각각을
+  	embeddings=embeddings_model, # embeddings_model을 사용하여 벡터로 변환하여 벡터+문서내용+메타데이터를 DB에 INSERT
+    collection_name=COLLECTION_NAME, # 해당 이름의 벡터 컬렉션을 postgreSQL에 생성
+    connection=CONNECTION_STRING # DB 연결정보 string
+    pre_delete_collection=True # 같은 이름의 컬렉션 있다면 지우고 새로 만듦
+  )
+  
+  retrieved_docs = db.similarity_search("테스트 텍스트")
+  
+  print(retrieved_docs[0].page_content)
+  ```
+
+- 기존 Vector Store 불러오기
+
+  ```python
+  vector_store = PGVector(
+  	connection=CONNECTION_STRING,
+    embedding=embeddings_model,
+    collection_name="test_db" # DB에 저장되어있는 컬렉션 이름
+  )
+  ```
+
+  
 
 ## Retriever
 
 - RAG 시스템의 다섯 번째 단계
+
 - 저장된 벡터 데이터베이스에서 사용자의 질문과 관련된 문서를 검색하는 과정
+
 - 동작방식
   - 질문의 벡터화
   - 벡터 유사성 비교
   - 상위 문서 선정
   - 문서 정보 반환
+
+- Vector Store Retriever
+
+  ```python
+  vector_store = PGVector.from_documents(
+  	documents=documents,
+    embeddings=embeddings_model,
+    collection_name="vector_store_test",
+    connection=CONNECTION_STRING,
+    pre_delete_collection=True
+  )
+  
+  vector_store_retriever = vector_store.as_retriever(search_kwargs={ "k": 3 })
+  
+  results = vector_store_retriever.invoke("생성형 AI의 기술 동향 알려줘.")
+  ```
+
+  
 
 ### Sparse Retriever
 
