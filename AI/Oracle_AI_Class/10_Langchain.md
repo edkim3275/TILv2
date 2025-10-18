@@ -560,7 +560,6 @@
   results = vector_store_retriever.invoke("생성형 AI의 기술 동향 알려줘.")
   ```
 
-  
 
 ### Sparse Retriever
 
@@ -586,6 +585,29 @@
   쿼리(사용자질문)들어오면 LLM이 다시 해당 질문을 여러 질문으로 파생시켜서 파생된 질문도 같이 던져서 결과를 검색.
 
   temperature=0 창의적이지 않은 정확한 답변, 1에 가까울 수록 창의적으로 생성(정확한 답변을 원하면 0 ~ 0.5, 창의적인 내용을 원한다면 0.5~1로 설정)
+
+  ```python
+  from langchain.retrievers import MultiQueryRetriever
+  
+  vector_retriever = vector_store.as_retriever(search_kwargs={"k": 3})
+  
+  llm = ChatOpenAI(model="gpt-40-mini", temperature=0)
+  
+  multi_query_retriever = MultiQueryRetriever(
+  	retriever=vector_retriever,
+    llm=llm
+  )
+  
+  try:
+    raw = multi_query_retriever.llm_chain.invoke({"question": user_question})
+    raw_text = raw if isinstance(raw, str) else getattr(raw,"content", str(raw))
+    generated_lines = [line.strip(" -•\t") for line in raw_text.splitlines() if line.strip()]
+    print("[LLM이 생성한 후보 질의 목록]")
+      for i, q in enumerate(generated_lines, 1):
+          print(f"  {i}. {q}")
+  except Exception as e:
+      print(f"[참고] 생성 질의 프리뷰 중 오류: {e}")
+  ```
 
 - Contextual Compression Retriever
 
