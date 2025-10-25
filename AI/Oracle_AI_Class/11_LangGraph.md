@@ -79,9 +79,38 @@
 
 - 노드에서 필요한 상태 값을 조회하여 동작에 활용할 수 있음
 
+- state 정보를 변경하는 방법
+
+  ```python
+  def update_node(state: GraphState):
+    ...
+    return {"example": "new_example"}
+  ```
+
+  node에서 반환 값으로 State 스키마에 맞는 새로운 State 정보를 딕셔너리 형태로 반환하면 된다. 위에서는 일부 필드만 업데이트 했으므로 업데이트 된 필드의 값만 변경된다.
+
+- Reducer를 이용한 상태 정보 변경
+
+  Reducer로 사용할 함수를 지정하기 위해서 일반적으로 Annotated를 사용. Annotated는 해당 필드에 대한 데이터 형과, 데이터를 업데이트할때 사용할 behavior를 두 번째 인자로 지정한다.
+
+  ```python
+  from typing import Annotated
+  from typing_extensions import TypedDict
+  from operator import add
+  
+  class GraphState(TypedDict):
+    num_list: Annotated[list[str], add]
+  ```
+
+  num_list는 str타입의 list로 update가 발생할 시에 해당 필드를 업데이트하지 않고, add라는 operator를 이용해서 리스트에 계속해서 데이터를 append하게 된다.
+
+- :warning: Multi State 사용시 주의점
+
+  Langraph에서는 하나의 Graph에서 여러개의 State를 동시에 사용할 수 있다. 다만 업데이트시에 Langraph는 노드에서 반환시 모든 state값을 병합하여 저장한다. 즉, state에 같은 이름이 있을 경우에는 어느 state의 정보인지와 상관없이 공통적으로 변경이 된다. 따라서 State마다 다른 변수 이름을 사용하는 것이 좋다.
+
 ### Node(노드)
 
-- 에이전트가 실질적으로 일을 할 수 있게하는 요소
+- 에이전트가 실질적으로 일(State 정보를 변경하거나 action을 취함)을 할 수 있게하는 요소
 
 - 함수로 정의
 
@@ -99,6 +128,16 @@
   ```
   add_node("노드이름", 함수)
   ```
+
+- config
+
+  두 번째 인자를 통해서 config 정보 전달이 가능. state는 node가 답변을 내는데 필요한 정보라고 한다면, config는 답변 생성에는 사용하지 않지만 node의 행동을 정의하기 위한 추가적인 메타 정보라고 생각하면된다.
+
+  config에는 LLM 이름이나 사용자 정보, 로깅/모닝터링을 위한 request id 등의 메타 정보가 들어가게 된다.
+
+- START와 END 노드
+
+  그래프의 시작점과 끝점을 정의하는 노드
 
 ### Edge(엣지)
 
@@ -122,6 +161,30 @@
   value에 해당하는 값이 END면 Graph 실행 종료
 
   노드이름이라면 해당 노드로 연결
+
+### 도구호출
+
+- 도구는 노드와 마찬가지로 함수로 정의한다.
+
+  ```python
+  @tool
+  def web_search(query: str):
+    ...
+    return response
+  ```
+
+- ToolNode
+
+  도구(tool)를 호출하는 노드를 ToolNode라고 하는데, 인자로 호출할 툴 함수를 정의한다.
+
+- 툴 노드를 정의했으면 LLM 모델에게 현재 생성된 툴 함수를 연결해주어야 한다.
+
+  ```python
+  llm = chat_model(model="gemini-2.5-flash")
+  model_with_tools = llm.bind_tools([web_search])
+  ```
+
+  이를 통해 LLM은 툴의 기능을 파악하고, 필요에 따라서 툴을 호출하도록 판단을 내릴 수 있다.
 
 ### 시적점 지정
 
