@@ -15,7 +15,7 @@
 | `git checkout -b <branch_name>`                        | 브랜치 생성함과 동시에 체크아웃 |                   |
 | `git switch -c <branch_name>`                          | 브랜치 생성함과 동시에 체크아웃 |                   |
 | `git checkout -t remote origin path`                   | 원격 브랜치 가져오기            |                   |
-| `git branch -d <branch_name>`                          | 로컬 브랜치 삭제                | `--delete`의 약자 |
+| `git branch -d <branch_name>`                          | 로컬에 있는 브랜치 삭제         | `--delete`의 약자 |
 | `git push <remote_branch_name> -d <local_branch_name>` | 원격 브랜치 삭제                |                   |
 | `git branch --set-upstream-to origin/<branch_name>`    | 로컬, 원격 브랜치 연동          |                   |
 | `git merge <branch_name>`                              | 브랜치 병합                     |                   |
@@ -87,6 +87,8 @@
 
   따라서 `git fetch`를 실행한 이후에는 `git merge` 혹은 `git rebase`를 사용하여 로컬 브랜치에 업데이트를 병합해야 한다.
 
+  git fetch --all : 모든 원격(remote)들의 새 참조만 가져옴(전체 원격 상태 최신화). 즉, 다른 동료 브랜치들의 최신 커밋 포인터를 로컬에 반영. 
+
 - `git merge` vs. `git rebase`
 
   merge는 브랜치를 통합하는 것. rebase는 브랜치의 base를 옮기는 것.
@@ -110,8 +112,98 @@
 
   => `git pull` === `git pull origin develop`
 
+## 개념 정리
+
+### HEAD
+
+- 현재 체크아웃 한 커밋(또는 브랜치)을 가리키는 포인터
+- 브랜치 이동 시 HEAD가 그 브랜치의 최신 커밋을 가리키도록 옮겨진다.
+
+### 커밋(commit)
+
+- 스냅샷 + 메타데이터(작성자/메시지/시간) + 부모 포인터를 가진 불변 노드
+- 각 커밋은 해시로 식별되고, 부모를 따라가며 히스토리가 만들어짐
+
+### 브랜치(branch)
+
+- 어느 커밋을 가리키는 포인터. 즉, 새 브랜치를 만들면 현재 커밋을 가리키는 새 이름이 생김
+- 원격 추적 브랜치(remote-tracking branch)란?
+  - 원격 저장소의 특정 브랜치가 현재 어느 커밋을 가리키는지 로컬에 복제해 둔 읽기 전용 포인터
+  - 예를들어 `remotes/origin/develop`이라고 한다면 원격 저장소의 develop이 가리키는 커밋 해시를 추적하는 포인터.
+  - 원격 추적 브랜치는 자동으로 갱신되지 않고 git fetch 혹은 git pull을 할 때 갱신된다.
+  - git branch -d <branch_name> 하고 git branch -a를 해도 원격 브랜치가 확인되는 이유는 git branch -d 가 로컬 브랜치를 삭제하는 명령어이기도하고, 원격 추적 브랜치는 건드리지 않는다. 따라서 `git push origin --delete feature/#1` 과 같이 원격 브랜치도 같이 삭제해준다. 혹은 원격에서 이미 삭제된 경우 `git fetch --prune` or `git fetch -p`를 통해 캐시 정리만 해준다.
+
+### 태그
+
+- 특정 커밋에 이름표(라벨)을 붙여서 "이 시점이 중요하다"를 표시하는 기능
+
+- 주로 릴리스 버전관리에 사용
+
+  ```
+  git tag v1.0.0
+  git push origin v1.0.0
+  ```
+
+  v1.0.0이라는 이름이 현재 커밋에 달리고, 다른 사람도 git checkout v1.0.0으로 그 시점 코드를 그대로 볼 수 있음.
+
+### merge / rebase
+
+- merge : 두 줄기를 통합 커밋 하나로 합치기
+- rebase : 한 줄기의 커밋을 다른 기준 위로 "재작성"
+
 ## 브랜치 전략
 
 ### git flow
+
+- Vincent Driessen의 모델을 기반으로 한 표준화 된 협업 전략
+
+| 브랜치    | 용도                              | 생성 기준                                          |
+| --------- | --------------------------------- | -------------------------------------------------- |
+| main      | 실제 서비스 운영 코드(production) | 오직 릴리스 버전만 merge                           |
+| develop   | 다음 버전을 준비하는 통합 브랜치  | feature -> develop                                 |
+| feature/* | 단위 기능 개발                    | develop에서 분기, 작업 후 develop 으로 merge       |
+| release/* | 배포 직전 QA 및 버그 수정         | develop에서 분기, QA 후 main과 develop에 merge     |
+| hotfix/*  | 운영 중 긴급 수정                 | main에서 바로 분기, 수정 후 main과 develop에 merge |
+
+```
+main
+└── hotfix/1.0.1
+develop
+ ├── feature/login-#1
+ ├── feature/signup-#2
+ └── release/1.1.0
+```
+
+- 프로젝트 규모나 팀 구성에 따라 단순화해서 사용하기도 함
+
+- PR 절차에서의 base
+
+  - PR 절차에서 base는 목표(받는) 브랜치를 의미, head(=compare)는 PR의 소스 브랜치를 의미
+
+  - 일반적으로 기능 개발(feature/)은 develop으로 통합되므로
+
+    base = develop, compare(head) = feature/* 로 설정 => "이 기능을 develop에 합친다."
+
+- PR(Pull Request) 예시
+
+  ```
+  ## 개요
+  - PR의 목적/배경을 간단히 설명해주세요.
+  
+  ## 변경 내용
+  - [ ] 주요 기능 A 추가
+  - [ ] 컴포넌트 B 리팩터링
+  - [ ] 스타일/문구 수정 등
+  
+  ## 스크린샷/동작 데모(선택)
+  - 전/후 비교 이미지 또는 GIF
+  
+  ## 테스트
+  - [ ] 유닛/통합 테스트 추가 혹은 업데이트
+  - [ ] 로컬에서 주요 케이스 수동 점검 완료
+  
+  ## 체크리스트
+  - [ ] 문서/주석 업데이트
+  ```
 
 ### thunk based
