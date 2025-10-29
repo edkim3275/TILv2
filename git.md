@@ -207,3 +207,36 @@ develop
   ```
 
 ### thunk based
+
+## Gitea
+
+- Gitea레포 작업 내용을 개인 레포에도 적용하고 싶은경우
+
+  1. 기존 origin 을 남기고 github 원격 추가
+
+     ```
+     git remote add github https://github.com/edgar-kim/project.git
+     ```
+
+  2. 전체 브랜치/태그 포함해서 github 푸시
+
+     ```
+     git push --mirror github
+     ```
+
+  3. (작업 후) gitea와 github 둘 다 동시에 push
+
+     ```
+     git push origin develop
+     git push github develop
+     ```
+
+  4. 추후에 github으로 완전히 전환하고 싶다면
+
+     ```
+     git remote remove origin
+     git remote rename github origin
+     ```
+
+- 혹은 임시로 origin이 둘 다 되게 설정하는 방법도 존재
+
