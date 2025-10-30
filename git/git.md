@@ -68,13 +68,12 @@
     $ git merge <A_branch_name>
     ```
 
-
 - 원격 브랜치 삭제
 
   ```bash
   로컬 브랜치 삭제
   $ git branch -d <local_branch_name>
-  
+
   원격 브랜치 삭제
   $ git push origin --delete <remote_branch_name>
   ```
@@ -87,7 +86,7 @@
 
   따라서 `git fetch`를 실행한 이후에는 `git merge` 혹은 `git rebase`를 사용하여 로컬 브랜치에 업데이트를 병합해야 한다.
 
-  git fetch --all : 모든 원격(remote)들의 새 참조만 가져옴(전체 원격 상태 최신화). 즉, 다른 동료 브랜치들의 최신 커밋 포인터를 로컬에 반영. 
+  git fetch --all : 모든 원격(remote)들의 새 참조만 가져옴(전체 원격 상태 최신화). 즉, 다른 동료 브랜치들의 최신 커밋 포인터를 로컬에 반영.
 
 - `git merge` vs. `git rebase`
 
@@ -157,13 +156,13 @@
 
 - Vincent Driessen의 모델을 기반으로 한 표준화 된 협업 전략
 
-| 브랜치    | 용도                              | 생성 기준                                          |
-| --------- | --------------------------------- | -------------------------------------------------- |
-| main      | 실제 서비스 운영 코드(production) | 오직 릴리스 버전만 merge                           |
-| develop   | 다음 버전을 준비하는 통합 브랜치  | feature -> develop                                 |
-| feature/* | 단위 기능 개발                    | develop에서 분기, 작업 후 develop 으로 merge       |
-| release/* | 배포 직전 QA 및 버그 수정         | develop에서 분기, QA 후 main과 develop에 merge     |
-| hotfix/*  | 운영 중 긴급 수정                 | main에서 바로 분기, 수정 후 main과 develop에 merge |
+| 브랜치     | 용도                              | 생성 기준                                          |
+| ---------- | --------------------------------- | -------------------------------------------------- |
+| main       | 실제 서비스 운영 코드(production) | 오직 릴리스 버전만 merge                           |
+| develop    | 다음 버전을 준비하는 통합 브랜치  | feature -> develop                                 |
+| feature/\* | 단위 기능 개발                    | develop에서 분기, 작업 후 develop 으로 merge       |
+| release/\* | 배포 직전 QA 및 버그 수정         | develop에서 분기, QA 후 main과 develop에 merge     |
+| hotfix/\*  | 운영 중 긴급 수정                 | main에서 바로 분기, 수정 후 main과 develop에 merge |
 
 ```
 main
@@ -182,26 +181,26 @@ develop
 
   - 일반적으로 기능 개발(feature/)은 develop으로 통합되므로
 
-    base = develop, compare(head) = feature/* 로 설정 => "이 기능을 develop에 합친다."
+    base = develop, compare(head) = feature/\* 로 설정 => "이 기능을 develop에 합친다."
 
 - PR(Pull Request) 예시
 
   ```
   ## 개요
   - PR의 목적/배경을 간단히 설명해주세요.
-  
+
   ## 변경 내용
   - [ ] 주요 기능 A 추가
   - [ ] 컴포넌트 B 리팩터링
   - [ ] 스타일/문구 수정 등
-  
+
   ## 스크린샷/동작 데모(선택)
   - 전/후 비교 이미지 또는 GIF
-  
+
   ## 테스트
   - [ ] 유닛/통합 테스트 추가 혹은 업데이트
   - [ ] 로컬에서 주요 케이스 수동 점검 완료
-  
+
   ## 체크리스트
   - [ ] 문서/주석 업데이트
   ```
@@ -239,4 +238,3 @@ develop
      ```
 
 - 혹은 임시로 origin이 둘 다 되게 설정하는 방법도 존재
-
