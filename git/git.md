@@ -99,8 +99,10 @@
 
   - rebase
 
-    말그대로 're' + 'base' base를 재설정한다는 의미. 여기서 base는 브랜치의 base를 의미하는데, 브랜치는 base 지점을 갖고 있어서 base에서부터 코드를 수정하게 됨.
+    "내 작업 커밋들을 다른 기준선(예: feature → develop ) 위로 다시 '올려놓는(재배치하는)' 것"
 
+    말그대로 're' + 'base' base를 재설정한다는 의미. 여기서 base는 브랜치의 base를 의미하는데, 브랜치는 base 지점을 갖고 있어서 base에서부터 코드를 수정하게 됨.
+    
     git history가 선형으로 깔끔해지면서 협업 시 merge만 했을 경우보다 history 확인이 상대적으로 명확해진다는 장점
 
 - `git config credential.helper store`
@@ -150,6 +152,12 @@
 - merge : 두 줄기를 통합 커밋 하나로 합치기
 - rebase : 한 줄기의 커밋을 다른 기준 위로 "재작성"
 
+#### rebase
+
+- git rebase --skip : 지금 적용 중인 커밋을 건너뛰기
+- git rebase --abort : rebase 시작 전 상태로 되돌리기
+- git push --force-with-lease : 히스토리를 "다시 썼기" 때문에 원격에 이미 푸시한 브랜치라면 강제 푸시가 필요하게 된다.
+
 ## 브랜치 전략
 
 ### git flow
@@ -188,24 +196,60 @@ develop
   ```
   ## 개요
   - PR의 목적/배경을 간단히 설명해주세요.
-
+  
   ## 변경 내용
   - [ ] 주요 기능 A 추가
   - [ ] 컴포넌트 B 리팩터링
   - [ ] 스타일/문구 수정 등
-
+  
   ## 스크린샷/동작 데모(선택)
   - 전/후 비교 이미지 또는 GIF
-
+  
   ## 테스트
   - [ ] 유닛/통합 테스트 추가 혹은 업데이트
   - [ ] 로컬에서 주요 케이스 수동 점검 완료
-
+  
   ## 체크리스트
   - [ ] 문서/주석 업데이트
   ```
 
 ### thunk based
+
+### 작업 브랜치에 최신 develop 반영하기
+
+#### 1. rebase 방식
+
+```bash
+# 원격 최신 이력 가져오기
+git fetch origin
+# 내 작업 브랜치로 이동
+git switch feature/#issue_number # 예시
+# develop 위로 "다시 올려타기"
+git rebase origin/develop
+# 충돌이 나면 해당 파일 수정 → 단계별 마크 제거 후
+git add <수정한 파일들>
+git rebase --continue # 충돌 끝날 때까지 반복
+# 로컬 테스트 통과 후 PR 갱신 푸시(이미 푸시한 브랜치를 rebase하면 강제 푸시가 필요)
+git push --force-with-lease
+```
+
+- 장점 : 커밋 이력이 직선(linear)이라 추적이 쉬움
+- 단점 : 이미 푸시한 브래치를 rebase하면 강제푸시가 필요하기에 항상 `--force-with-lease`를 사용해야함
+
+#### 2. merge 
+
+```bash
+git fetch origin
+git switch feature/#issue_number
+git merge origin/develop
+# 충돌이 나면 해당 파일 수정 → 단계별 마크 제거 후
+git add <수정한 파일들>
+git commit
+git push
+```
+
+- 장점 : 강제 푸시 불필요(이력 재작성 안 함)
+- 단점 : 머지 커밋이 쌓여 로그가 복잡해질 수 있음
 
 ## Gitea
 
@@ -238,3 +282,56 @@ develop
      ```
 
 - 혹은 임시로 origin이 둘 다 되게 설정하는 방법도 존재
+
+## 에러 케이스
+
+### case1
+
+> A, B, C가 순서대로 PR을 올렸고, A와 C가 겹쳐 C PR에서 충돌이 날 때
+
+- 핵심 : C가 자신의 브랜치를 최신 develop에 맞춰 재정렬(혹은 병합)하고, 로컬에서 충돌을 해결한 뒤 PR을 업데이트한다.
+
+- 절차
+
+  1. A와 B의 PR이 머지됨 → develop이 바뀜
+
+  2. C가 로컬에서 처리
+
+     ```bash
+     git fetch origin
+     git switch feature/#C
+     git rebase origin/develop
+     # << 충돌 발생 >>
+     # 충돌 파일 열어 수동 해결
+     git add .
+     git rebase --continue
+     # 충돌 해결 후 테스트/빌드/린트 돌리기
+     git push --force-with-lease
+     ```
+
+  3. PR 자동 갱신 → 리뷰/CI 통과 → 머지
+
+- 요약
+
+  항상 PR 전 git fetch → 작업 브랜치에 rebase origin/devleop 혹은 merge origin/develop → 충돌 로컬 해결 → 테스트 후 푸시로 PR 업데이트
+
+- 충돌을 줄이기 위해서는
+
+  - "PR 올리기 직전 최신화" : 모든 기여자는 PR 만들거나 업데이트하기 전에 rebase origin/develop 혹은 merge origin/develop을 반드시 수행
+  - "머지 정책" : develop에 머지할 때 머지 전 조건으로 브랜치가 최신 develop과 동기화 되어 있어야하는 "Require up-to-date branch" 설정
+  - 작업 범위 줄이기 : PR을 작은 단위로, 공통 파일은 한 사람이 담당하거나 먼저 합치고 나머지가 그 위에서 작업
+  - 자동화 : CI에서 린트/테스트를 강제. pre-commit 훅 추천
+  - 충돌 반복 방지 : git config --global rerere.enabled true → 한 번 해결한 충돌 패턴을 기억해서 다음 번에 자동 적용
+
+- :question: 그러면 git pull origin develop과의 다른 점은?
+
+  - 현재 브랜치를 기준으로 origin/develop을 끌어와서 합치는 동작으로, 기본 설정에서는 merge 방식으로 동작한다.
+
+  - git pull origin develop을 하면 내부적으로는 아래와 같다.
+
+    ```bash
+    git fetch origin develop # 원격 develop 최신 이력 가져오기
+    git merge FETCH_HEAD # 그것을 지금 브랜치에 병합
+    ```
+
+  - git pull --rebase origin develop 처럼 `--rebase`를 붙이면 rebase 방식으로 동작하게 된다.
