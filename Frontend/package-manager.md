@@ -126,3 +126,19 @@
     패키지를 devDependencies로 설치하는 옵션. 주로 개발 시에만 필요한 도구나 라이브러리로, 프로덕션 빌드에는 필요하지 않는 패키지를 설치할 때 사용하는 옵션
 
     `npm install --save-dev <package_name>`으로 사용
+
+## pnpm
+
+- 고성능(Permorant) npm이라고해서 pnpm이라고 함.
+
+  npm에 대한 *드롭 인 대체(Drop-in replacement)*이므로 npm 프로젝트가 있다면 바로 pnpm을 사용할 수 있다.
+
+  > :bulb: *Drop-in replacement*? CS용어로써 다른 코드나 설정 변경 없이 하드웨어(또는 소프트웨어) 구성 요소를 다른 하드웨어(또는 소프트웨어)의 구성 요소로 대체해도 부정적인 영향을 미치지 않는 기능을 나타낸다.
+
+- Zoltan Kochan에 의해 2017년 출시.
+
+- npm, yarn의 주요 문제
+
+  프로젝트 전체에서 사용되는 의존성의 중복된 저장소. 호이스팅을 사용하여 `node_modules`를 플랫.
+
+   `pnpm`은 호이스팅 대신 의존성 해결 전략의 대안책으로 내용 주소화 저장소(Content-addressable storage)를 도입.
